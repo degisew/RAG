@@ -6,5 +6,6 @@ load_dotenv()
 
 
 class Config:
-    pinecone_index_name = os.environ["INDEX_NAME"]
     model = os.environ["MODEL"]
+    pinecone_index_name = os.environ["INDEX_NAME"]
+    embedding_model = os.environ["EMBEDDING_MODEL"]

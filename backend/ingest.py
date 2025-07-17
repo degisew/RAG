@@ -1,12 +1,12 @@
 from config import Config
 from .load import get_chunks
-from .embedding_model import initialize_embedding
+from .embedding_model import embedding_model
 from langchain_pinecone import PineconeVectorStore
 
 
 def ingest_embeddings():
     chunks = get_chunks()
-    embedding = initialize_embedding()
+    embedding = embedding_model()
     PineconeVectorStore.from_documents(
         chunks,
         embedding,

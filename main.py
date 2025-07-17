@@ -23,10 +23,11 @@
 #     res = retrieval_chain.invoke({"input": query})
 
 #     return res
+from backend.chat import chat
 
 
 def main():
-    pass
+    print(chat())
     # print(ingest_embeddings())
 
 

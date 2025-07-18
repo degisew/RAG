@@ -21,7 +21,8 @@ def chat():
         search_kwargs={
             "k": 5,
             "filter": {
-                "source": "/home/dag/Desktop/projects/RAG/documents/Problem_Solving_Toolkit.pdf"
+                "file_name": "Intch_user_agreement",
+                "user_id": "1234"
             }
         }
     )
@@ -34,7 +35,7 @@ def chat():
     # retriever
     retrieval_chain = create_retrieval_chain(retriever, combine_docs_chain)
 
-    query = "How to solve problem effectively?"
+    query = "How can I cancel my subscription?"
 
     res = retrieval_chain.invoke({"input": query})
 

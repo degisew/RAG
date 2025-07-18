@@ -1,3 +1,4 @@
+import os
 from typing import List
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_core.documents.base import Document
@@ -5,10 +6,21 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
 def pdf_loader() -> list[Document]:
-    file_path = "/home/dag/Desktop/projects/RAG/documents/Problem_Solving_Toolkit.pdf"
+    file_path = "/home/dag/Desktop/projects/RAG/documents/Intch_user_agreement.pdf"
+
     loader = PyMuPDFLoader(file_path)
 
-    return loader.load()
+    docs: List[Document] = loader.load()
+
+    file_name = os.path.basename(file_path).split(".")[0]
+    # TODO: Add all necessary fields
+    for doc in docs:
+        doc.metadata.update({
+            "file_name": file_name,
+            "user_id": "1234"
+        })
+
+    return docs
 
 
 def get_chunks() -> List[Document]:

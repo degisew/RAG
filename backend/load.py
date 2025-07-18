@@ -5,7 +5,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
 def pdf_loader() -> list[Document]:
-    file_path = "/home/dag/Desktop/projects/RAG/documents/Intch_user_agreement.pdf"
+    file_path = "/home/dag/Desktop/projects/RAG/documents/Problem_Solving_Toolkit.pdf"
     loader = PyMuPDFLoader(file_path)
 
     return loader.load()

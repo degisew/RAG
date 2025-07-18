@@ -14,11 +14,17 @@ def chat():
     )
 
     embedding = embedding_model()
-
     retriever = PineconeVectorStore(
         index_name=Config.pinecone_index_name,
         embedding=embedding
-    ).as_retriever()
+    ).as_retriever(
+        search_kwargs={
+            "k": 5,
+            "filter": {
+                "source": "/home/dag/Desktop/projects/RAG/documents/Problem_Solving_Toolkit.pdf"
+            }
+        }
+    )
 
     combine_docs_chain = create_stuff_documents_chain(
         llm,
@@ -28,7 +34,7 @@ def chat():
     # retriever
     retrieval_chain = create_retrieval_chain(retriever, combine_docs_chain)
 
-    query = "Do you know how much I love her?"
+    query = "How to solve problem effectively?"
 
     res = retrieval_chain.invoke({"input": query})
 

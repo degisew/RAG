@@ -1,4 +1,4 @@
-# from backend.ingest import ingest_embeddings
+from backend.ingest import ingest_embeddings
 
 #     llm = ChatGroq(
 #         model=Config.model,

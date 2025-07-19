@@ -7,7 +7,7 @@ from .prompts import RETRIEVAL_QA_CHAT_PROMPT
 from config import Config
 
 
-def process_query(query: str):
+def process_query(query: str, user_id, file_name):
     llm = ChatGroq(
         model=Config.model,
         temperature=0.0
@@ -21,6 +21,7 @@ def process_query(query: str):
         search_kwargs={
             "k": 5,
             "filter": {
+                # TODO: get this from the request
                 "file_name": "Intch_user_agreement",
                 "user_id": "1234"
             }

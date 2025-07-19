@@ -1,35 +1,37 @@
+from typing import Any
+from backend.chat import process_query
 from backend.ingest import ingest_embeddings
-
-#     llm = ChatGroq(
-#         model=Config.model,
-#         temperature=0.0
-#     )
-
-#     embedding = generate_embeddings()
-
-#     query = "WWhy caching?"
-
-#     retrieval_qa_prompt = hub.pull("langchain-ai/retrieval-qa-chat")
-
-#     vector_store = PineconeVectorStore(index_name=Config.pinecone_index_name, embedding=embedding)
-
-#     combine_docs_chain = create_stuff_documents_chain(llm, retrieval_qa_prompt)
-
-#     retrieval_chain = create_retrieval_chain(
-#         vector_store.as_retriever(),
-#         combine_docs_chain
-#     )
-
-#     res = retrieval_chain.invoke({"input": query})
-
-#     return res
-from backend.chat import chat
+from fastapi import BackgroundTasks, FastAPI, UploadFile
+from backend.schemas import ChatSchema
+from backend.utils import save_document
 
 
-def main():
-    print(chat())
-    # print(ingest_embeddings())
+app = FastAPI()
 
 
-if __name__ == "__main__":
-    main()
+@app.post("/upload")
+def upload_document(file: UploadFile, background_tasks: BackgroundTasks) -> dict[str, Any]:
+    file_name = file.filename
+    user_id = "1234"
+
+    metadata = {
+        "file_name": file_name,
+        "user_id": user_id
+    }
+
+    file_path = save_document(file, metadata)
+
+    background_tasks.add_task(ingest_embeddings, file_path, metadata)
+
+    return {
+        "status_code": 202,
+        "message": "Uploading your file..."
+    }
+
+
+@app.post("/chat")
+def chat(request_body: ChatSchema):
+    user_id = "1234"
+    result = process_query(request_body, user_id)
+
+    return result

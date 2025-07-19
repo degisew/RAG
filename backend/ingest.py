@@ -4,8 +4,8 @@ from .embedding_model import embedding_model
 from langchain_pinecone import PineconeVectorStore
 
 
-def ingest_embeddings():
-    chunks = get_chunks()
+def ingest_embeddings(file_path: str, metadata: dict):
+    chunks = get_chunks(file_path, metadata)
     embedding = embedding_model()
     PineconeVectorStore.from_documents(
         chunks,

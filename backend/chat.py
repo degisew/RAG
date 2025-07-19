@@ -7,7 +7,7 @@ from .prompts import RETRIEVAL_QA_CHAT_PROMPT
 from config import Config
 
 
-def chat():
+def process_query(query: str):
     llm = ChatGroq(
         model=Config.model,
         temperature=0.0
@@ -34,8 +34,6 @@ def chat():
 
     # retriever
     retrieval_chain = create_retrieval_chain(retriever, combine_docs_chain)
-
-    query = "How can I cancel my subscription?"
 
     res = retrieval_chain.invoke({"input": query})
 

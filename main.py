@@ -1,4 +1,5 @@
 from typing import Any
+from backend.chat import process_query
 from backend.ingest import ingest_embeddings
 from fastapi import BackgroundTasks, FastAPI, UploadFile
 from backend.utils import save_document
@@ -25,3 +26,10 @@ def upload_document(file: UploadFile, background_tasks: BackgroundTasks) -> dict
         "status_code": 202,
         "message": "Uploading your file..."
     }
+
+
+@app.post("/chat")
+def chat(query: str):
+    result = process_query(query)
+
+    return result

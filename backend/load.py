@@ -1,11 +1,11 @@
+from langchain_core.documents.base import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import (
     PyMuPDFLoader,
-    UnstructuredWordDocumentLoader,
+    Docx2txtLoader,
     TextLoader,
     UnstructuredMarkdownLoader
 )
-from langchain_core.documents.base import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
 def document_loader(file_path: str, metadata: dict) -> list[Document]:
@@ -16,15 +16,13 @@ def document_loader(file_path: str, metadata: dict) -> list[Document]:
     if extension == "pdf":
         loader = PyMuPDFLoader(file_path)
     elif extension in {"docx", "doc"}:
-        loader = UnstructuredWordDocumentLoader(file_path)
+        loader = Docx2txtLoader(file_path)
     elif extension == "txt":
         loader = TextLoader(file_path)
     elif extension == "md":
         loader = UnstructuredMarkdownLoader(file_path)
     else:
         raise ValueError(f"Unsupported file type: {extension}")
-
-    print("DDD", extension)
 
     docs: list[Document] = loader.load()
 

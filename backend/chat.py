@@ -2,12 +2,18 @@ from langchain_groq import ChatGroq
 from langchain_pinecone import PineconeVectorStore
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains.retrieval import create_retrieval_chain
-from .embedding_model import embedding_model
-from .prompts import RETRIEVAL_QA_CHAT_PROMPT
+
+from backend.embedding_model import embedding_model
+from backend.prompts import RETRIEVAL_QA_CHAT_PROMPT
+from backend.schemas import ChatSchema
 from config import Config
 
 
-def process_query(query: str, user_id, file_name):
+def process_query(request_body: ChatSchema, user_id):
+    request_data = request_body.model_dump(exclude_unset=True)
+    query = request_data["query"]
+    file_name = request_data["file_name"]
+
     llm = ChatGroq(
         model=Config.model,
         temperature=0.0
@@ -22,8 +28,8 @@ def process_query(query: str, user_id, file_name):
             "k": 5,
             "filter": {
                 # TODO: get this from the request
-                "file_name": "Intch_user_agreement",
-                "user_id": "1234"
+                "file_name": file_name,
+                "user_id": user_id
             }
         }
     )

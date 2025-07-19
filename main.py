@@ -2,6 +2,7 @@ from typing import Any
 from backend.chat import process_query
 from backend.ingest import ingest_embeddings
 from fastapi import BackgroundTasks, FastAPI, UploadFile
+from backend.schemas import ChatSchema
 from backend.utils import save_document
 
 
@@ -29,7 +30,8 @@ def upload_document(file: UploadFile, background_tasks: BackgroundTasks) -> dict
 
 
 @app.post("/chat")
-def chat(query: str):
-    result = process_query(query)
+def chat(request_body: ChatSchema):
+    user_id = "1234"
+    result = process_query(request_body, user_id)
 
     return result

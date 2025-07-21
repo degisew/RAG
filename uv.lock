@@ -1967,6 +1967,7 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "ruff" },
     { name = "sentence-transformers" },
+    { name = "sqlalchemy" },
     { name = "unstructured" },
 ]
 
@@ -1985,6 +1986,7 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.1.1" },
     { name = "ruff", specifier = ">=0.12.4" },
     { name = "sentence-transformers", specifier = ">=5.0.0" },
+    { name = "sqlalchemy", specifier = ">=2.0.41" },
     { name = "unstructured", specifier = ">=0.18.9" },
 ]
 

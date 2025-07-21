@@ -50,3 +50,8 @@ def chat(request_body: ChatSchema):
     result = process_query(request_body, user_id)
 
     return result
+
+
+@app.get("/documents")
+def get_user_documents():
+    

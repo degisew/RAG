@@ -18,5 +18,6 @@ dependencies = [
     "python-dotenv>=1.1.1",
     "ruff>=0.12.4",
     "sentence-transformers>=5.0.0",
+    "sqlalchemy>=2.0.41",
     "unstructured>=0.18.9",
 ]

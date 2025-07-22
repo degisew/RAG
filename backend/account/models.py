@@ -1,7 +1,8 @@
-import uuid
+
 from datetime import datetime
-from sqlalchemy import Boolean, DateTime, Uuid, func, String
-from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
+import uuid
+from sqlalchemy import Boolean, DateTime, String, Uuid, func
+from sqlalchemy.orm import mapped_column, Mapped, DeclarativeBase
 
 
 class Base(DeclarativeBase):
@@ -30,21 +31,6 @@ class AbstractBaseModel(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(), onupdate=func.now(), default=func.now()
     )
-
-
-class DocumentModel(AbstractBaseModel):
-    __tablename__ = "documents"
-
-    file_name: Mapped[String] = mapped_column(
-        String()
-    )
-
-    file_location = mapped_column(
-        String()
-    )
-
-    def __repr__(self) -> str:
-        return f"{self.file_name}"
 
 
 class User(AbstractBaseModel):

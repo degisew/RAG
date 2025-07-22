@@ -1,11 +1,14 @@
 from typing import Any
 from fastapi import BackgroundTasks, UploadFile
+from fastapi.routing import APIRouter
+from sqlalchemy import select
 from backend.chat import process_query
+from backend.core.db import DbSession
+from backend.core.models import Document
 from backend.core.schemas import ChatSchema
 from backend.ingest import ingest_embeddings
 from backend.utils import save_document
-from fastapi.routing import APIRouter
-
+from backend.account.dependencies import CurrentUser
 
 router = APIRouter(tags=["RAG"])
 
@@ -39,5 +42,10 @@ def chat(request_body: ChatSchema):
 
 
 @router.get("/documents")
-def get_user_documents():
-    pass
+def get_user_documents(db: DbSession, current_user: CurrentUser):
+    user_id = current_user.id
+    docs = db.scalars(select(Document).where(
+        Document.user_id == user_id
+    ))
+
+    return docs

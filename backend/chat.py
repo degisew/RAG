@@ -29,7 +29,7 @@ def process_query(request_body: ChatSchema, user_id):
             "filter": {
                 # TODO: get this from the request
                 "file_name": file_name,
-                "user_id": user_id
+                "user_id": str(user_id)
             }
         }
     )

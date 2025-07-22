@@ -14,9 +14,13 @@ router = APIRouter(tags=["RAG"])
 
 
 @router.post("/upload")
-def upload_document(file: UploadFile, background_tasks: BackgroundTasks) -> dict[str, Any]:
+def upload_document(
+    file: UploadFile,
+    background_tasks: BackgroundTasks,
+    current_user: CurrentUser
+) -> dict[str, Any]:
     file_name = file.filename
-    user_id = "1234"
+    user_id = current_user.id
 
     metadata = {
         "file_name": file_name,
@@ -34,8 +38,8 @@ def upload_document(file: UploadFile, background_tasks: BackgroundTasks) -> dict
 
 
 @router.post("/chat")
-def chat(request_body: ChatSchema):
-    user_id = "1234"
+def chat(request_body: ChatSchema, current_user: CurrentUser):
+    user_id = current_user.id
     result = process_query(request_body, user_id)
 
     return result

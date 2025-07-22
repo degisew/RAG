@@ -5,7 +5,7 @@ from sqlalchemy import select
 from backend.chat import process_query
 from backend.core.db import DbSession
 from backend.core.models import Document
-from backend.core.schemas import ChatSchema
+from backend.core.schemas import ChatSchema, DocumentResponseSchema
 from backend.ingest import ingest_embeddings
 from backend.utils import save_document
 from backend.account.dependencies import CurrentUser
@@ -15,6 +15,7 @@ router = APIRouter(tags=["RAG"])
 
 @router.post("/upload")
 def upload_document(
+    db: DbSession,
     file: UploadFile,
     background_tasks: BackgroundTasks,
     current_user: CurrentUser
@@ -24,17 +25,17 @@ def upload_document(
 
     metadata = {
         "file_name": file_name,
-        "user_id": user_id
+        "user_id": str(user_id)
     }
 
-    file_path = save_document(file, metadata)
+    # TODO: Here do a get_or_create operation to avoid saving the same file to DB
+    file_info = save_document(db, file, metadata)
+
+    file_path = file_info.pop('file_path')
 
     background_tasks.add_task(ingest_embeddings, file_path, metadata)
 
-    return {
-        "status_code": 202,
-        "message": "Uploading your file..."
-    }
+    return file_info
 
 
 @router.post("/chat")
@@ -52,4 +53,4 @@ def get_user_documents(db: DbSession, current_user: CurrentUser):
         Document.user_id == user_id
     ))
 
-    return docs
+    return [DocumentResponseSchema.model_validate(doc) for doc in docs]

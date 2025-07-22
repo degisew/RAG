@@ -3,8 +3,33 @@ import shutil
 from typing import Any
 from fastapi import UploadFile
 
+from backend.core.db import DbSession
+from backend.core.models import Document
 
-def save_document(uploaded_file: UploadFile, metadata: dict[str, Any]) -> str:
+
+def save_document(
+    db: DbSession,
+    uploaded_file: UploadFile,
+    metadata: dict[str, Any]
+) -> dict[str, Any]:
+    file_path = store_document_on_disk(uploaded_file, metadata)
+
+    saved_file_metadata = {
+        "file_name": metadata["file_name"],
+        "user_id": metadata["user_id"],
+        "file_location": file_path
+    }
+
+    document = store_document_metadata_on_db(db, data=saved_file_metadata)
+
+    return {
+        "file_name": metadata["file_name"],
+        "id": document.id,
+        "file_path": file_path
+    }
+
+
+def store_document_on_disk(uploaded_file: UploadFile, metadata: dict[str, Any]) -> str:
     directory: str = f"./documents/{metadata["user_id"]}"
     file_path = os.path.join(directory, metadata["file_name"])
     os.makedirs(directory, exist_ok=True)
@@ -12,3 +37,15 @@ def save_document(uploaded_file: UploadFile, metadata: dict[str, Any]) -> str:
         shutil.copyfileobj(uploaded_file.file, file)
 
     return file_path
+
+
+def store_document_metadata_on_db(db: DbSession, data: dict[str, Any]):
+    instance = Document(**data)
+
+    db.add(instance)
+
+    db.commit()
+
+    db.refresh(instance)
+
+    return instance

@@ -3,6 +3,7 @@ from fastapi import Depends
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from backend.core.config import settings
+from backend.account.models import Base
 
 DB_USER = settings.DB_USER
 DB_PASS = settings.DB_PASS
@@ -16,12 +17,13 @@ engine: Engine = create_engine(url)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-def get_db() -> Generator[Session, Any, None]:
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+def get_session() -> Generator[Session, Any, None]:
+    with Session(engine) as session:
+        yield session
 
 
-DbSession = Annotated[Session, Depends(get_db)]
+DbSession = Annotated[Session, Depends(get_session)]
+
+
+# Create tables automatically
+Base.metadata.create_all(bind=engine)

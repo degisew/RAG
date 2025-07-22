@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "alembic>=1.16.4",
     "docx2txt>=0.9",
     "fastapi[standard]>=0.116.1",
     "langchain>=0.3.26",
@@ -14,6 +15,9 @@ dependencies = [
     "langchain-pinecone>=0.2.8",
     "langchainhub>=0.1.21",
     "markdown>=3.8.2",
+    "passlib>=1.7.4",
+    "psycopg2-binary>=2.9.10",
+    "pyjwt>=2.10.1",
     "pymupdf>=1.26.3",
     "python-dotenv>=1.1.1",
     "ruff>=0.12.4",

@@ -33,6 +33,8 @@ class AbstractBaseModel(Base):
 
 
 class DocumentModel(AbstractBaseModel):
+    __tablename__ = "documents"
+
     file_name: Mapped[String] = mapped_column(
         String()
     )

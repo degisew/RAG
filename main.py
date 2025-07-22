@@ -1,10 +1,10 @@
-from typing import Any
-from backend.chat import process_query
-from backend.ingest import ingest_embeddings
-from fastapi import BackgroundTasks, FastAPI, UploadFile
+from fastapi import FastAPI
+from backend.core.exceptions import register_global_exceptions
 from fastapi.middleware.cors import CORSMiddleware
-from backend.schemas import ChatSchema
-from backend.utils import save_document
+
+from backend.auth.router import router as auth_router
+from backend.router import router as rag_router
+from backend.account.router import router as account_router
 
 
 app = FastAPI()
@@ -24,34 +24,9 @@ app.add_middleware(
 )
 
 
-@app.post("/upload")
-def upload_document(file: UploadFile, background_tasks: BackgroundTasks) -> dict[str, Any]:
-    file_name = file.filename
-    user_id = "1234"
-
-    metadata = {
-        "file_name": file_name,
-        "user_id": user_id
-    }
-
-    file_path = save_document(file, metadata)
-
-    background_tasks.add_task(ingest_embeddings, file_path, metadata)
-
-    return {
-        "status_code": 202,
-        "message": "Uploading your file..."
-    }
+app.include_router(auth_router)
+app.include_router(rag_router)
+app.include_router(account_router)
 
 
-@app.post("/chat")
-def chat(request_body: ChatSchema):
-    user_id = "1234"
-    result = process_query(request_body, user_id)
-
-    return result
-
-
-@app.get("/documents")
-def get_user_documents():
-    
+register_global_exceptions(app)

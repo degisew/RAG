@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, SettingsConfigDict, DotEnvSettingsSource
 
 
 class Settings(BaseSettings):
@@ -11,12 +11,8 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASS: str
 
-    PGADMIN_DEFAULT_EMAIL: str
-    PGADMIN_DEFAULT_PASSWORD: str
-    UID: int
-    GID: int
-
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(
+        env_file=".env", extra="ignore")
 
 
 settings = Settings()  # type: ignore

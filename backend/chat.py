@@ -5,7 +5,7 @@ from langchain.chains.retrieval import create_retrieval_chain
 
 from backend.embedding_model import embedding_model
 from backend.prompts import RETRIEVAL_QA_CHAT_PROMPT
-from backend.schemas import ChatSchema
+from backend.core.schemas import ChatSchema
 from config import Config
 
 

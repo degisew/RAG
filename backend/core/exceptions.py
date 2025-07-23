@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 
 
 class AuthenticationErrorException(Exception):
-    def __init__(self, message: str = "Could not validate user"):
+    def __init__(self, message: str = "Invalid Credentials"):
         self.message = message
         super().__init__(self.message)
 

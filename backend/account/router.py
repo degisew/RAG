@@ -21,6 +21,7 @@ async def create_user(db: DbSession, user: UserSchema) -> UserResponseSchema:
     """
     Create a new user.
     """
+    print(user)
     return UserService.create_user(db, user)
 
 

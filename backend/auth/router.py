@@ -37,5 +37,3 @@ async def login_for_access_token(
     }
 
     return TokenSchema.model_validate(obj)
-
-

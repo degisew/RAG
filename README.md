@@ -17,13 +17,13 @@ An AI application that lets users upload documents and chat with them using natu
 
 **Key Features**:
 
-- Upload legal, technical, or custom documents directly from the interface with multiple supported formats (e.g PDF, docx, md).
+- Upload documents in multiple formats (PDF, DOCX, Markdown)
 
-- An intuitive chat interface to ask questions about your uploaded files. Answers are context-aware and grounded in the document content.
+- Chat interface with intelligent, context-aware answers
 
-- Secure user login and document management.
+- Secure login & document management
 
-- Chat history for each document (coming soon)
+- Chat history per document(Coming Soon)
 
 ## Table of Contents
 

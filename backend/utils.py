@@ -1,3 +1,4 @@
+from datetime import datetime, timezone, timedelta
 import os
 import shutil
 from typing import Any
@@ -5,6 +6,20 @@ from fastapi import UploadFile
 
 from backend.core.db import DbSession
 from backend.core.models import Document
+
+
+def validate_message_timestamp(client_timestamp) -> datetime:
+    MAX_CLOCK_SKEW = timedelta(minutes=1)
+
+    try:
+        sent_at = datetime.fromisoformat(client_timestamp)
+        now = datetime.now(timezone.utc)
+        if abs(now - sent_at) < MAX_CLOCK_SKEW:
+            return sent_at
+    except Exception:
+        pass
+
+    return datetime.now(timezone.utc)
 
 
 def save_document(

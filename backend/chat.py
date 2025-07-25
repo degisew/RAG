@@ -13,7 +13,8 @@ def process_query(request_body: ChatSchema, user_id):
     request_data = request_body.model_dump(exclude_unset=True)
     query = request_data["query"]
     file_name = request_data["file_name"]
-
+    base_name = ".".join(file_name.split(".")[:-1])
+    print("DDD", base_name)
     llm = ChatGroq(
         model=Config.model,
         temperature=0.0
@@ -28,7 +29,7 @@ def process_query(request_body: ChatSchema, user_id):
             "k": 5,
             "filter": {
                 # TODO: get this from the request
-                "file_name": file_name,
+                "file_name": base_name,
                 "user_id": str(user_id)
             }
         }

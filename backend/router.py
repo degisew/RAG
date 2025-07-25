@@ -33,7 +33,7 @@ def upload_document(
 
     file_path = file_info.pop('file_path')
 
-    background_tasks.add_task(ingest_embeddings, file_path, metadata)
+    # background_tasks.add_task(ingest_embeddings, file_path, metadata)
 
     return file_info
 

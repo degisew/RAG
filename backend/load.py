@@ -7,11 +7,13 @@ from langchain_community.document_loaders import (
     UnstructuredMarkdownLoader
 )
 
+from backend.utils import strip_file_extension
+
 
 def document_loader(file_path: str, metadata: dict) -> list[Document]:
     file_name = metadata["file_name"]
     extension = file_name.split(".")[-1].lower()
-    base_name = ".".join(file_name.split(".")[:-1])
+    base_name = strip_file_extension(file_name)
 
     if extension == "pdf":
         loader = PyMuPDFLoader(file_path)

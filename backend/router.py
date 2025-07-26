@@ -1,18 +1,18 @@
-from collections import defaultdict
 from typing import Any
 from fastapi import BackgroundTasks, UploadFile
 from fastapi.routing import APIRouter
 from sqlalchemy import select
 from backend.chat import process_query
 from backend.core.db import DbSession
-from backend.core.models import Document, Message
+from backend.core.models import Chat, Document, Message
 from backend.ingest import ingest_embeddings
-from backend.utils import buffer_message, flush_user_messages_to_db, save_document, validate_message_timestamp
+from backend.utils import buffer_message, flush_user_messages_to_db, generate_chat_name, save_document, validate_message_timestamp
 from backend.account.dependencies import CurrentUser
 from backend.core.schemas import (
     BaseMessageSchema,
-    ChatHistoryResponseSchema,
+    ChatSessionResponseSchema,
     ChatSchema,
+    ChatSessionSchema,
     DocumentResponseSchema,
     MessageResponseSchema
 )
@@ -87,9 +87,6 @@ def store_chat_messages(
 ):
     user_id = current_user.id
     serialized_data = chat_message.model_dump(exclude_unset=True)
-    chat_info = serialized_data.pop("chatInfo")
-    chat_id = chat_info["chatId"]
-    chat_name = chat_info["chatName"]
     client_timestamp = serialized_data["timestamp"]
 
     if not client_timestamp:
@@ -97,8 +94,7 @@ def store_chat_messages(
 
     validated_timestamp = validate_message_timestamp(client_timestamp)
 
-    serialized_data.update(timestamp=validated_timestamp,
-                           chat_name=chat_name, chat_id=chat_id)
+    serialized_data.update(timestamp=validated_timestamp)
 
     number_of_messages_per_user = buffer_message(user_id, serialized_data)
 
@@ -108,13 +104,29 @@ def store_chat_messages(
     return {"status": "message received"}
 
 
+@router.post("/chat-session")
+def create_chat_session(db: DbSession, chat_session: ChatSessionSchema, current_user: CurrentUser):
+    serialized_data = chat_session.model_dump(exclude_unset=True)
+    chat_name = generate_chat_name(serialized_data["file_name"])
+    print("CHAT_NAME", chat_name)
+    instance = Chat(chat_name=chat_name, user_id=current_user.id)
+
+    db.add(instance)
+
+    db.commit()
+
+    db.refresh(instance)
+
+    return ChatSessionResponseSchema.model_validate(instance)
+
+
 # TODO: We might have a separate model for storing chat_id, and name
 # TODO: to avoid loading much data here on messages DB
 @router.get("/chat-histories")
 def get_chat_history(db: DbSession, current_user: CurrentUser):
     user_id = current_user.id
-    histories = db.scalars(select(Message).where(
-        Message.user_id == user_id
+    histories = db.scalars(select(Chat).where(
+        Chat.user_id == user_id
     ))
 
-    return [ChatHistoryResponseSchema.model_validate(his) for his in histories]
+    return [ChatSessionResponseSchema.model_validate(his) for his in histories]

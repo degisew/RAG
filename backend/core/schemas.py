@@ -25,10 +25,17 @@ class BaseMessageSchema(BaseModel):
     chatInfo: dict[str, Any]
 
 
-class MessageResponseSchema(BaseMessageSchema):
+class MessageResponseSchema(BaseModel):
     id: UUID
+    sender: Literal["user", "bot"]
+    message: str
+    timestamp: datetime
+
+    model_config: ConfigDict = {"from_attributes": True}
 
 
-class ChatHistorySchema(BaseModel):
-    chat_id: str
+class ChatHistoryResponseSchema(BaseModel):
+    chat_id: UUID
     chat_name: str
+
+    model_config: ConfigDict = {"from_attributes": True}

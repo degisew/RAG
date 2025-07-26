@@ -7,7 +7,7 @@ from backend.chat import process_query
 from backend.core.db import DbSession
 from backend.core.models import Document, Message
 from backend.ingest import ingest_embeddings
-from backend.utils import buffer_message, flush_user_messages, save_document, validate_message_timestamp
+from backend.utils import buffer_message, flush_user_messages_to_db, save_document, validate_message_timestamp
 from backend.account.dependencies import CurrentUser
 from backend.core.schemas import (
     BaseMessageSchema,
@@ -78,10 +78,6 @@ def get_chat_messages(db: DbSession, chat_id, current_user: CurrentUser):
     return [MessageResponseSchema.model_validate(message) for message in chat_messages]
 
 
-# ! GLOBAL MESSAGE BUFFER
-message_buffer = defaultdict(list)
-
-
 @router.post("/messages")
 def store_chat_messages(
     db: DbSession,
@@ -104,12 +100,10 @@ def store_chat_messages(
     serialized_data.update(timestamp=validated_timestamp,
                            chat_name=chat_name, chat_id=chat_id)
 
-    message_buffer[user_id].append(serialized_data)
-
     number_of_messages_per_user = buffer_message(user_id, serialized_data)
 
     if number_of_messages_per_user >= 3:
-        background_tasks.add_task(flush_user_messages, db, user_id)
+        background_tasks.add_task(flush_user_messages_to_db, db, user_id)
 
     return {"status": "message received"}
 

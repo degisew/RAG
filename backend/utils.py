@@ -24,6 +24,7 @@ def validate_message_timestamp(client_timestamp) -> datetime:
     return datetime.now(timezone.utc)
 
 
+# ! GLOBAL MESSAGE BUFFER
 # TODO: We might need redis for better message queue
 message_buffer = defaultdict(list)
 buffer_locks = defaultdict(Lock)
@@ -35,7 +36,7 @@ def buffer_message(user_id, message):
     return len(message_buffer[user_id])
 
 
-def flush_user_messages(db: DbSession, user_id):
+def flush_user_messages_to_db(db: DbSession, user_id):
     print("flushing to db...")
     with buffer_locks[user_id]:
         if not message_buffer[user_id]:

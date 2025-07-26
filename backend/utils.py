@@ -10,6 +10,18 @@ from backend.core.db import DbSession
 from backend.core.models import Document, Message
 
 
+def strip_file_extension(file_name):
+    return ".".join(file_name.split(".")[:-1])
+
+
+def generate_chat_name(file_name):
+    PREFIX = "Chat with"
+    print("generate_chat_name", file_name)
+    base_name = strip_file_extension(file_name)
+
+    return " ".join([PREFIX, base_name])
+
+
 def validate_message_timestamp(client_timestamp) -> datetime:
     MAX_CLOCK_SKEW = timedelta(minutes=1)
 
@@ -33,6 +45,7 @@ buffer_locks = defaultdict(Lock)
 def buffer_message(user_id, message):
     with buffer_locks[user_id]:
         message_buffer[user_id].append(message)
+    print("BUFFER ===>", message_buffer)
     return len(message_buffer[user_id])
 
 

@@ -22,7 +22,7 @@ class BaseMessageSchema(BaseModel):
     sender: Literal["user", "bot"]
     message: str
     timestamp: str  # expect in ISO format from the UI and will do validation
-    chatInfo: dict[str, Any]
+    chat_id: UUID
 
 
 class MessageResponseSchema(BaseModel):
@@ -34,8 +34,12 @@ class MessageResponseSchema(BaseModel):
     model_config: ConfigDict = {"from_attributes": True}
 
 
-class ChatHistoryResponseSchema(BaseModel):
-    chat_id: UUID
+class ChatSessionSchema(BaseModel):
+    file_name: str
+
+
+class ChatSessionResponseSchema(BaseModel):
+    id: UUID
     chat_name: str
 
     model_config: ConfigDict = {"from_attributes": True}

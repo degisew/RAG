@@ -6,6 +6,7 @@ from langchain.chains.retrieval import create_retrieval_chain
 from backend.embedding_model import embedding_model
 from backend.prompts import RETRIEVAL_QA_CHAT_PROMPT
 from backend.core.schemas import ChatSchema
+from backend.utils import strip_file_extension
 from config import Config
 
 
@@ -13,8 +14,8 @@ def process_query(request_body: ChatSchema, user_id):
     request_data = request_body.model_dump(exclude_unset=True)
     query = request_data["query"]
     file_name = request_data["file_name"]
-    base_name = ".".join(file_name.split(".")[:-1])
-    print("DDD", base_name)
+    base_name = strip_file_extension(file_name)
+
     llm = ChatGroq(
         model=Config.model,
         temperature=0.0

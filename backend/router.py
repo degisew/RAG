@@ -7,11 +7,11 @@ from backend.chat import process_query
 from backend.core.db import DbSession
 from backend.core.models import Document, Message
 from backend.ingest import ingest_embeddings
-from backend.utils import save_document, validate_message_timestamp
+from backend.utils import buffer_message, flush_user_messages, save_document, validate_message_timestamp
 from backend.account.dependencies import CurrentUser
 from backend.core.schemas import (
     BaseMessageSchema,
-    ChatHistorySchema,
+    ChatHistoryResponseSchema,
     ChatSchema,
     DocumentResponseSchema,
     MessageResponseSchema
@@ -83,7 +83,12 @@ message_buffer = defaultdict(list)
 
 
 @router.post("/messages")
-def store_chat_messages(chat_message: BaseMessageSchema, current_user: CurrentUser):
+def store_chat_messages(
+    db: DbSession,
+    chat_message: BaseMessageSchema,
+    current_user: CurrentUser,
+    background_tasks: BackgroundTasks
+):
     user_id = current_user.id
     serialized_data = chat_message.model_dump(exclude_unset=True)
     chat_info = serialized_data.pop("chatInfo")
@@ -101,9 +106,12 @@ def store_chat_messages(chat_message: BaseMessageSchema, current_user: CurrentUs
 
     message_buffer[user_id].append(serialized_data)
 
-    print(f"{message_buffer}")
+    number_of_messages_per_user = buffer_message(user_id, serialized_data)
 
-    return "Ok"
+    if number_of_messages_per_user >= 3:
+        background_tasks.add_task(flush_user_messages, db, user_id)
+
+    return {"status": "message received"}
 
 
 # TODO: We might have a separate model for storing chat_id, and name
@@ -115,4 +123,4 @@ def get_chat_history(db: DbSession, current_user: CurrentUser):
         Message.user_id == user_id
     ))
 
-    return [ChatHistorySchema.model_validate(history) for history in histories]
+    return [ChatHistoryResponseSchema.model_validate(his) for his in histories]

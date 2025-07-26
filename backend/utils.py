@@ -1,3 +1,5 @@
+from threading import Lock
+from collections import defaultdict
 from datetime import datetime, timezone, timedelta
 import os
 import shutil
@@ -5,7 +7,7 @@ from typing import Any
 from fastapi import UploadFile
 
 from backend.core.db import DbSession
-from backend.core.models import Document
+from backend.core.models import Document, Message
 
 
 def validate_message_timestamp(client_timestamp) -> datetime:
@@ -20,6 +22,35 @@ def validate_message_timestamp(client_timestamp) -> datetime:
         pass
 
     return datetime.now(timezone.utc)
+
+
+# TODO: We might need redis for better message queue
+message_buffer = defaultdict(list)
+buffer_locks = defaultdict(Lock)
+
+
+def buffer_message(user_id, message):
+    with buffer_locks[user_id]:
+        message_buffer[user_id].append(message)
+    return len(message_buffer[user_id])
+
+
+def flush_user_messages(db: DbSession, user_id):
+    print("flushing to db...")
+    with buffer_locks[user_id]:
+        if not message_buffer[user_id]:
+            return
+
+        messages = message_buffer[user_id]
+
+        db.bulk_save_objects(
+            [Message(**msg, user_id=user_id) for msg in messages])
+
+        db.commit()
+
+        print("Flushing Done!")
+
+        message_buffer[user_id].clear()
 
 
 def save_document(

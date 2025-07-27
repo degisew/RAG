@@ -23,7 +23,7 @@ An AI application that lets users upload documents and chat with them using natu
 
 - Secure login & document management
 
-- Chat history per document(In progress)
+- Chat history per document
 
 ## [Check Front-end code here](https://github.com/degisew/legal_assistant_ui)
 

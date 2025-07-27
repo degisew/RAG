@@ -1,4 +1,6 @@
-import uuid
+from datetime import datetime
+from typing import Any, Literal
+from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 
 
@@ -8,9 +10,36 @@ class ChatSchema(BaseModel):
 
 
 class DocumentResponseSchema(BaseModel):
-    id: uuid.UUID
-    user_id: uuid.UUID
+    id: UUID
+    user_id: UUID
     # file_location: str
     file_name: str
+
+    model_config: ConfigDict = {"from_attributes": True}
+
+
+class BaseMessageSchema(BaseModel):
+    sender: Literal["user", "bot"]
+    message: str
+    timestamp: str  # expect in ISO format from the UI and will do validation
+    chat_id: UUID
+
+
+class MessageResponseSchema(BaseModel):
+    id: UUID
+    sender: Literal["user", "bot"]
+    message: str
+    timestamp: datetime
+
+    model_config: ConfigDict = {"from_attributes": True}
+
+
+class ChatSessionSchema(BaseModel):
+    file_name: str
+
+
+class ChatSessionResponseSchema(BaseModel):
+    id: UUID
+    chat_name: str
 
     model_config: ConfigDict = {"from_attributes": True}

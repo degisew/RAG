@@ -75,7 +75,7 @@ def save_document(
     file_path = store_document_on_disk(uploaded_file, metadata)
 
     saved_file_metadata = {
-        "file_name": metadata["file_name"],
+        "file_name": strip_file_extension(metadata["file_name"]),
         "user_id": metadata["user_id"],
         "file_location": file_path
     }

@@ -70,10 +70,13 @@ def get_chat_messages(db: DbSession, chat_id, current_user: CurrentUser):
     # TODO: check how/where to get user_id if we write it in async way
     # TODO: (we might not have current logged in user here in the route)
     user_id = current_user.id
-    chat_messages = db.scalars(select(Message).where(
-        Message.chat_id == chat_id,
-        Message.user_id == user_id
-    ))
+    chat_messages = db.scalars(
+        select(Message)
+        .order_by(Message.timestamp)
+        .where(
+            Message.chat_id == chat_id,
+            Message.user_id == user_id
+        ))
 
     return [MessageResponseSchema.model_validate(message) for message in chat_messages]
 

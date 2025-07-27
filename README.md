@@ -89,6 +89,7 @@ An AI application that lets users upload documents and chat with them using natu
 </details>
 
 ## Architecture
+<img width="1536" height="600" alt="rag_app_architecture" src="https://github.com/user-attachments/assets/e9e900fe-5d69-4470-90b8-828718d37b5d" />
 
 **Tech Stack**:
 
